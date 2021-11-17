@@ -1,8 +1,34 @@
-import { VERSION, green, rollup, defineConfig } from "./deps.js";
+import {
+  green,
+  rollup,
+  // svelte,
+  VERSION,
+} from "./deps.js";
 
 console.log(green(VERSION));
 
-defineConfig()
+const rollupInputOptions = {
+  input: "src/index.js",
+  // external: ["three"],
+  // plugins: [
+  //   svelte({
+  //     include: "src/components/**/*.svelte",
+  //   }),
+  // ],
+};
+const rollupOutputOptions = {
+  // dir: "build",
+  file: "build/bundle.js",
+  format: "es",
+};
+
+
+const bundle = await rollup(rollupInputOptions)
+
+await bundle.generate(rollupOutputOptions)
+await bundle.write(rollupOutputOptions)
+await bundle.close()
+
 
 // Start listening on port 8080 of localhost.
 // const server = Deno.listen({ port: 8080 });
