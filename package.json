@@ -1,8 +1,17 @@
 {
+  "name": "app",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "next",
+    "svelte": "^3.42.6"
+  },
   "type": "module",
   "dependencies": {
-    "rollup": "^2.60.0",
-    "rollup-plugin-svelte": "^7.1.0",
-    "svelte": "^3.44.1"
+    "three": "^0.134.0"
   }
 }
