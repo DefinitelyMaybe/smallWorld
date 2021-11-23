@@ -1,64 +1,25 @@
 <script>
   import { onMount } from "svelte";
-  import {
-    Scene,
-    PerspectiveCamera,
-    WebGLRenderer,
-    BoxGeometry,
-    MeshBasicMaterial,
-    Mesh,
-    PlaneGeometry,
-    SphereGeometry,
-    GridHelper,
-    Raycaster,
-    Vector2,
-    Vector3,
-    DoubleSide,
-  } from "three";
-  import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+  import { browser } from '$app/env';
+  import * as THREE from "three";
+  import * as SC from "svelte-cubed";
 
-  let renderer, camera, controls;
+  let check = false
+
+  let spin = 0
+  let height = 1
   const inventory = [1,2,3,4,5,6,7,8,9,10]
 
-  const scene = new Scene();
-
-  // spinning cube
-  let geometry = new BoxGeometry();
-  let material = new MeshBasicMaterial({ color: 0x00aa00 });
-  const cube = new Mesh(geometry, material);
-  cube.position.y = 1;
-  scene.add(cube);
-
-  // plane
-  geometry = new PlaneGeometry(5, 5);
-  geometry.rotateX(-Math.PI / 2);
-  material = new MeshBasicMaterial({ color: 0x111111 }); //side: DoubleSide
-  const plane = new Mesh(geometry, material);
-  scene.add(plane);
-
-  // grid
-  const gridHelper = new GridHelper(10, 10);
-  scene.add(gridHelper);
-
   // raycasting
-  const rayCaster = new Raycaster();
-  const pointer = new Vector2();
-  geometry = new SphereGeometry(0.1, 5, 5);
-  const rayObject = new Mesh(
-    geometry,
-    new MeshBasicMaterial({ color: 0xff0000 })
-  );
-  rayObject.visible = false;
-  scene.add(rayObject);
-
-  const animate = function () {
-    requestAnimationFrame(animate);
-
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-
-    renderer.render(scene, camera);
-  };
+  // const rayCaster = new Raycaster();
+  // const pointer = new Vector2();
+  // geometry = new SphereGeometry(0.1, 5, 5);
+  // const rayObject = new Mesh(
+  //   geometry,
+  //   new MeshBasicMaterial({ color: 0xff0000 })
+  // );
+  // rayObject.visible = false;
+  // scene.add(rayObject);
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -98,31 +59,45 @@
   }
 
   onMount(() => {
-    const canvas = document.querySelector("#three");
-    camera = new PerspectiveCamera(
-      90,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 5;
+    console.log("hello world");
+  })
 
-    renderer = new WebGLRenderer({ canvas: canvas });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    controls = new OrbitControls(camera, renderer.domElement);
-
-    window.addEventListener("resize", onWindowResize);
-
-    animate();
-  });
+  if (browser) {
+    SC.onFrame(() => {
+      // spin += 0.01
+    }) 
+  }
 </script>
 
 <svelte:head>
   <title>Small World</title>
 </svelte:head>
 
-<canvas on:mousemove={onMouseMove} on:click="{makeBox}" id="three" />
+<SC.Canvas
+  antialias
+  shadows
+  background={new THREE.Color('papayawhip')}
+  fog={new THREE.FogExp2('papayawhip', 0.1)}>
+  <SC.Mesh geometry={new THREE.BoxGeometry()}
+      material={new THREE.MeshStandardMaterial({color:0xff3e00})}
+      rotation={[0, spin, 0]}
+      castShadow/>
+  <SC.Group position={[0, -height / 2, 0]}>
+    <SC.Mesh geometry={new THREE.PlaneGeometry(50, 50)}
+      material={new THREE.MeshStandardMaterial({ color: 'burlywood' })}
+      rotation={[-Math.PI / 2, 0, 0]}
+      receiveShadow/>
+    <SC.Primitive object={new THREE.GridHelper(50, 50, 0x444444, 0x555555)}
+      position={[0, 0.001, 0]}/>
+  </SC.Group>
+  <SC.PerspectiveCamera position={[1,1,3]}/>
+  <SC.OrbitControls maxPolarAngle={Math.PI * 0.51}/>
+  <SC.AmbientLight intensity={0.6}/>
+  <SC.DirectionalLight intensity={0.6}
+    position={[-2,3,2]}
+    shadow={{ mapSize: [2048, 2048] }}/>
+</SC.Canvas>
+
 <div>
   <ul>
     {#each inventory as item}
@@ -130,26 +105,27 @@
     {/each}
   </ul>
 </div>
+<input type="checkbox" bind:checked={check} on:change={() => {console.log(check);}}>
 
 <style>
-  :global(body, html) {
+  /* :global(body, html) {
     margin: 0px;
     width: 100%;
     height: 100%;
     /* background-color: black; */
-    color: white;
+    /*color: white;
     pointer-events: none;
     overflow: hidden;
-  }
+  } */
 
-  canvas {
+  /* canvas {
     position: absolute;
     top: 0em;
     z-index: -1;
     width: 100%;
     height: 100%;
     pointer-events: all;
-  }
+  } */
 
   div {
     position: absolute;
@@ -159,5 +135,9 @@
     display: grid;
     gap: 1em;
     grid-template-columns: repeat(4, minmax(100px, 1fr));
+  }
+
+  input {
+    position: absolute;
   }
 </style>

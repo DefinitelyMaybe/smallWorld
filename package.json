@@ -1,6 +1,7 @@
 {
   "name": "app",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -8,10 +9,11 @@
   },
   "devDependencies": {
     "@sveltejs/kit": "next",
+    "@types/three": "^0.134.0",
     "svelte": "^3.42.6"
   },
-  "type": "module",
   "dependencies": {
+    "svelte-cubed": "^0.2.0",
     "three": "^0.134.0"
   }
 }
